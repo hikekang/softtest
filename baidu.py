@@ -33,7 +33,7 @@ def mongo():
     ipcol = mydb['ip']
     usercol = mydb['user']
     data = ipcol.find()
-    user = usercol.find().skip(64)  # 48开始
+    user = usercol.find().skip(66)  # 48开始
     return data, user
 
 
@@ -56,7 +56,7 @@ def proxy():
     option.add_argument('user-agent=' + ua)
     option.add_argument("--user-data-dir=" + r"C:/Users/hike/AppData/Local/Google/Chrome/User Data")
     driver = webdriver.Chrome(options=option)
-    driver.set_window_size(838, 735)
+    # driver.set_window_size(838, 735)
     return driver,ua
 
 def open_driver(driver):
@@ -72,30 +72,30 @@ def add_coookie_login(bduss):
     window_name = u'百度一下，你就知道 - Google Chrome'
     handow = win32gui.FindWindow(None, window_name)
 
-    win32gui.SetWindowPos(handow, HWND_TOPMOST, 0, 0, 500, 500, SWP_SHOWWINDOW)
-    win32gui.ShowWindow(handow, SW_SHOWMAXIMIZED)
+    win32gui.SetWindowPos(handow, HWND_TOPMOST, 0, 0, 750, 723, SWP_SHOWWINDOW)
+    # win32gui.ShowWindow(handow, SW_SHOWMAXIMIZED)
     m = PyMouse()
-    m.click(1268, 48, 1, 1)
+    m.click(652, 61, 1, 1)
     time.sleep(1)
-    m.click(901, 76, 1, 1)
+    m.click(301, 87, 1, 1)
     time.sleep(1)
-    m.click(867, 152, 1, 1)
+    m.click(273, 168, 1, 1)
     time.sleep(1)
     k = PyKeyboard()
     k.type_string('BDUSS')
-    m.click(987, 236, 1, 1)
+    m.click(315, 236, 1, 1)
     time.sleep(1)
-    k.type_string(
-        bduss)
+    k.type_string(bduss)
     time.sleep(1)
-    m.click(934, 432, 1, 1)
+    m.click(369, 446, 1, 1)
     time.sleep(1)
-    m.click(1056, 128, 1, 3)
+    m.click(436, 141, 1, 3)
     time.sleep(1)
-    m.click(931, 530, 1, 1)
+    m.click(297, 541, 1, 1)
     time.sleep(1)
-    m.click(984, 644, 1, 1)
+    m.click(367, 656, 1, 1)
     time.sleep(1)
+    m.click(70, 656, 1, 1)
 def write_log(user_name,title):
     filename="log.txt"
     with open(filename,'a') as file_object:
@@ -103,6 +103,7 @@ def write_log(user_name,title):
 
 
 def login(driver, user):
+    driver.refresh()
     print("点击登录")
     # driver.implicitly_wait(15)
     driver.find_element_by_link_text('登录').click()
@@ -154,7 +155,7 @@ def jubao(driver, data, user):
     #     time.sleep(1)
     #     print(3 - x)
     # driver.implicitly_wait(10)
-    time.sleep(0.2)
+    time.sleep(2)
     print("等待网页显示")
     print("查找企业/组织侵权")
     driver.find_element_by_xpath('//*[@id="jubao-type-level1"]/a[3]').click()

@@ -19,7 +19,6 @@ option.add_experimental_option('excludeSwitches', ['enable-automation'])
 
 user = []
 
-
 # data=[]
 #
 def mongo():
@@ -28,7 +27,7 @@ def mongo():
     ipcol = mydb['ip']
     usercol = mydb['user']
     data = ipcol.find()
-    user = usercol.find().skip(44)  # 20开始
+    user = usercol.find().skip(51)  # 48开始
     return data, user
 
 
@@ -48,13 +47,11 @@ def proxy():
 
     ua = UserAgent()
     ua = ua.chrome
-
     option.add_argument('user-agent=' + ua)
 
     driver = webdriver.Chrome(options=option)
     driver.set_window_size(838, 735)
-
-    return driver
+    return driver,ua
 
 
 def open_driver(driver):
@@ -108,6 +105,7 @@ def login(driver, user):
     # 点击下拉列表
 
 
+
 def jubao(driver, data, user):
     print("正在跳转举报链接")
     driver.implicitly_wait(30)
@@ -132,6 +130,8 @@ def jubao(driver, data, user):
     driver.find_element_by_xpath('//*[@id="form-pic2"]').send_keys(data.get('url'))
     driver.find_element_by_xpath('//*[@id="form-phone"]').send_keys(user.get('phone'))
     print("内容填写完毕，请填写验证码")
+    # 刷新验证码
+
     # 写日志
     write_log(name, title)
     # time.sleep(10)
@@ -159,7 +159,7 @@ def main():
         dd.append(d)
     # user=mongo()[1]
     for u in users:
-        driver = proxy()
+        driver,ua_img = proxy()
         open_driver(driver)
         login(driver, u)
         for d in dd:

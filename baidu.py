@@ -4,6 +4,11 @@
 # @FileName: baidu.py
 # @Software: PyCharm
 import random
+import time
+from pymouse import *
+from pykeyboard import *
+import win32gui
+from win32con import HWND_TOPMOST, SWP_SHOWWINDOW, SW_SHOWMAXIMIZED, MOUSEEVENTF_LEFTDOWN
 
 from selenium import webdriver
 import time
@@ -21,13 +26,14 @@ user = []
 
 # data=[]
 #
+
 def mongo():
     myclient = pymongo.MongoClient(host="127.0.0.1", port=27017)
     mydb = myclient.jubao
     ipcol = mydb['ip']
     usercol = mydb['user']
     data = ipcol.find()
-    user = usercol.find().skip(51)  # 48开始
+    user = usercol.find().skip(64)  # 48开始
     return data, user
 
 
@@ -48,11 +54,10 @@ def proxy():
     ua = UserAgent()
     ua = ua.chrome
     option.add_argument('user-agent=' + ua)
-
+    option.add_argument("--user-data-dir=" + r"C:/Users/hike/AppData/Local/Google/Chrome/User Data")
     driver = webdriver.Chrome(options=option)
     driver.set_window_size(838, 735)
     return driver,ua
-
 
 def open_driver(driver):
     # driver.delete_all_cookies()
@@ -62,6 +67,35 @@ def open_driver(driver):
     driver.get('https://www.baidu.com')
     # time.sleep(3)
     print("等待网页响应")
+
+def add_coookie_login(bduss):
+    window_name = u'百度一下，你就知道 - Google Chrome'
+    handow = win32gui.FindWindow(None, window_name)
+
+    win32gui.SetWindowPos(handow, HWND_TOPMOST, 0, 0, 500, 500, SWP_SHOWWINDOW)
+    win32gui.ShowWindow(handow, SW_SHOWMAXIMIZED)
+    m = PyMouse()
+    m.click(1268, 48, 1, 1)
+    time.sleep(1)
+    m.click(901, 76, 1, 1)
+    time.sleep(1)
+    m.click(867, 152, 1, 1)
+    time.sleep(1)
+    k = PyKeyboard()
+    k.type_string('BDUSS')
+    m.click(987, 236, 1, 1)
+    time.sleep(1)
+    k.type_string(
+        bduss)
+    time.sleep(1)
+    m.click(934, 432, 1, 1)
+    time.sleep(1)
+    m.click(1056, 128, 1, 3)
+    time.sleep(1)
+    m.click(931, 530, 1, 1)
+    time.sleep(1)
+    m.click(984, 644, 1, 1)
+    time.sleep(1)
 def write_log(user_name,title):
     filename="log.txt"
     with open(filename,'a') as file_object:
@@ -161,11 +195,11 @@ def main():
     for u in users:
         driver,ua_img = proxy()
         open_driver(driver)
-        login(driver, u)
+        # login(driver, u)
+        add_coookie_login(u.get('BDUSS'))
         for d in dd:
             jubao(driver, d, u)
         quitChrome(driver)
-
 
 if __name__ == '__main__':
     main()

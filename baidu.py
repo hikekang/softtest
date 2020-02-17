@@ -33,7 +33,7 @@ def mongo():
     ipcol = mydb['ip']
     usercol = mydb['user']
     data = ipcol.find()
-    user = usercol.find().skip(66)  # 48开始
+    user = usercol.find().skip(1)  # 48开始
     return data, user
 
 
@@ -64,12 +64,28 @@ def open_driver(driver):
     print("打开页面")
 
     driver.implicitly_wait(10)
-    driver.get('https://www.baidu.com')
+    driver.get('http://i.baidu.com/')
     # time.sleep(3)
     print("等待网页响应")
 
+def add_cookie(driver,bduss):
+    cookielist=[{
+        'domain': '.baidu.com',
+        'expiry': 1841140385.316289,
+        'httpOnly': True,
+        'name': 'BDUSS',
+        'path': '/',
+        'secure': False,
+        'value': bduss
+    }]
+    for cookie in cookielist:  # 遍历添加cookie
+        if 'expiry' in cookie:
+            cookie['expiry'] = int(cookie['expiry'])
+        driver.add_cookie(cookie)
+    driver.refresh()
+
 def add_coookie_login(bduss):
-    window_name = u'百度一下，你就知道 - Google Chrome'
+    window_name = u'百度个人中心——您在百度的家 - Google Chrome'
     handow = win32gui.FindWindow(None, window_name)
 
     win32gui.SetWindowPos(handow, HWND_TOPMOST, 0, 0, 750, 723, SWP_SHOWWINDOW)
@@ -142,6 +158,7 @@ def login(driver, user):
 
 
 def jubao(driver, data, user):
+    print(driver.get_cookies())
     print("正在跳转举报链接")
     driver.implicitly_wait(30)
     url_jubao = data.get('url_jubao')
@@ -197,7 +214,8 @@ def main():
         driver,ua_img = proxy()
         open_driver(driver)
         # login(driver, u)
-        add_coookie_login(u.get('BDUSS'))
+        # add_coookie_login(u.get('BDUSS'))
+        add_cookie(driver,u.get('BDUSS'))
         for d in dd:
             jubao(driver, d, u)
         quitChrome(driver)

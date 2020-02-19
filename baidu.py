@@ -4,36 +4,27 @@
 # @FileName: baidu.py
 # @Software: PyCharm
 import random
-import time
 from pymouse import *
 from pykeyboard import *
 import win32gui
 from win32con import HWND_TOPMOST, SWP_SHOWWINDOW, SW_SHOWMAXIMIZED, MOUSEEVENTF_LEFTDOWN
-
 from selenium import webdriver
 import time
 from fake_useragent import UserAgent
 import pymongo
-from selenium.webdriver import Chrome
-from selenium.webdriver import ChromeOptions
-import requests
-from bs4 import BeautifulSoup
+
 
 option = webdriver.ChromeOptions()
 option.add_experimental_option('excludeSwitches', ['enable-automation'])
 
 user = []
-
-# data=[]
-#
-
 def mongo():
     myclient = pymongo.MongoClient(host="127.0.0.1", port=27017)
     mydb = myclient.jubao
     ipcol = mydb['ip']
     usercol = mydb['user']
-    data = ipcol.find()
-    user = usercol.find().skip(1)  # 48开始
+    data = ipcol.find().skip(13)
+    user = usercol.find().skip(45)  # 开始
     return data, user
 
 
@@ -54,18 +45,17 @@ def proxy():
     ua = UserAgent()
     ua = ua.chrome
     option.add_argument('user-agent=' + ua)
-    option.add_argument("--user-data-dir=" + r"C:/Users/hike/AppData/Local/Google/Chrome/User Data")
+    # option.add_argument("--user-data-dir=" + r"C:/Users/hike/AppData/Local/Google/Chrome/User Data")
     driver = webdriver.Chrome(options=option)
-    # driver.set_window_size(838, 735)
+    driver.set_window_size(740, 735)
     return driver,ua
 
 def open_driver(driver):
-    # driver.delete_all_cookies()
     print("打开页面")
 
     driver.implicitly_wait(10)
     driver.get('http://i.baidu.com/')
-    # time.sleep(3)
+    time.sleep(1)
     print("等待网页响应")
 
 def add_cookie(driver,bduss):
@@ -155,10 +145,16 @@ def login(driver, user):
     #     print(20 - x)
     # 点击下拉列表
 
-
-
+def isElementExist(driver, element):
+    flag = True
+    browser = driver
+    try:
+        browser.find_element_by_xpath(element)
+        return flag
+    except:
+        flag = False
+        return flag
 def jubao(driver, data, user):
-    print(driver.get_cookies())
     print("正在跳转举报链接")
     driver.implicitly_wait(30)
     url_jubao = data.get('url_jubao')
@@ -166,31 +162,26 @@ def jubao(driver, data, user):
     title=data.get('title')
     name=user.get('name')
 
-    # time.sleep(3)
-    # print(url_jubao)
-    # for x in range(3):
-    #     time.sleep(1)
-    #     print(3 - x)
-    # driver.implicitly_wait(10)
     time.sleep(2)
     print("等待网页显示")
-    print("查找企业/组织侵权")
-    driver.find_element_by_xpath('//*[@id="jubao-type-level1"]/a[3]').click()
+    d1 = random.randint(2, 3)
+    if(d1==2):
+        print("个人")
+    elif(d1==3):
+        print("企业")
+    driver.find_element_by_xpath('//*[@id="jubao-type-level1"]/a['+str(d1)+']').click()
+
+    if(d1==3):
+        d2 = random.randint(1,2)
+        driver.find_element_by_xpath('//*[@id="jubao-type-level2-' + str(d1 - 1) + '"]/li[' + str(d2) + ']/label').click()
     print("正在填写内容")
     reason="reason"+str(random.randint(1,3))
     driver.find_element_by_xpath('//*[@id="form-description"]').send_keys(data.get(reason))
     driver.find_element_by_xpath('//*[@id="form-pic2"]').send_keys(data.get('url'))
     driver.find_element_by_xpath('//*[@id="form-phone"]').send_keys(user.get('phone'))
     print("内容填写完毕，请填写验证码")
-    # 刷新验证码
-
     # 写日志
     write_log(name, title)
-    # time.sleep(10)
-
-    # for x in range(20):
-    #     time.sleep(1)
-    #     print(20 - x)
 
 
 def quitChrome(driver):
@@ -200,6 +191,7 @@ def quitChrome(driver):
     driver.delete_all_cookies()
     driver.delete_all_cookies()
     print("关闭浏览器")
+    driver.close()
     driver.quit()
     print("切换ip")
 
@@ -209,7 +201,6 @@ def main():
     dd = []
     for d in data:
         dd.append(d)
-    # user=mongo()[1]
     for u in users:
         driver,ua_img = proxy()
         open_driver(driver)

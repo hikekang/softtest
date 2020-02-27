@@ -4,6 +4,8 @@
 # @FileName: baidu.py
 # @Software: PyCharm
 import random
+import datetime
+import win32con
 from pymouse import *
 from pykeyboard import *
 import win32gui
@@ -24,7 +26,7 @@ def mongo():
     ipcol = mydb['ip']
     usercol = mydb['user']
     data = ipcol.find().skip(13)
-    user = usercol.find().skip(45)  # 开始
+    user = usercol.find().skip(0)  # 62-74开始
     return data, user
 
 
@@ -103,7 +105,8 @@ def add_coookie_login(bduss):
     time.sleep(1)
     m.click(70, 656, 1, 1)
 def write_log(user_name,title):
-    filename="log.txt"
+    today=datetime.date.today()
+    filename=str(today)+"-log.txt"
     with open(filename,'a') as file_object:
         file_object.write(user_name+"\t:"+title+"\n")
 
@@ -171,9 +174,6 @@ def jubao(driver, data, user):
         print("企业")
     driver.find_element_by_xpath('//*[@id="jubao-type-level1"]/a['+str(d1)+']').click()
 
-    if(d1==3):
-        d2 = random.randint(1,2)
-        driver.find_element_by_xpath('//*[@id="jubao-type-level2-' + str(d1 - 1) + '"]/li[' + str(d2) + ']/label').click()
     print("正在填写内容")
     reason="reason"+str(random.randint(1,3))
     driver.find_element_by_xpath('//*[@id="form-description"]').send_keys(data.get(reason))
@@ -192,9 +192,12 @@ def quitChrome(driver):
     driver.delete_all_cookies()
     print("关闭浏览器")
     driver.close()
-    driver.quit()
+    # driver.quit()
     print("切换ip")
-
+def close_ip_web():
+    win_name="IP地址查询--手机号码查询归属地 | 邮政编码查询 | 长途电话区号 | 身份证号码验证在线查询网 - Internet Explorer"
+    handow=win32gui.FindWindow(None,win_name)
+    win32gui.PostMessage(handow,win32con.WM_CLOSE,0,0)
 
 def main():
     data, users = mongo()

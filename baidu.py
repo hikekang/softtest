@@ -25,31 +25,18 @@ def mongo():
     mydb = myclient.jubao
     ipcol = mydb['ip']
     usercol = mydb['user']
-    data = ipcol.find().skip(13)
-    user = usercol.find().skip(0)  # 62-74开始
+    data = ipcol.find().skip(13).limit(12)
+    user = usercol.find().skip(53)  # 62-74开始
     return data, user
 
 
 def proxy():
-    '''
-    url_ip = "http://dev.kdlapi.com/api/getproxy/?orderid=917598854915999&num=1&protocol=2&method=2&an_an=1&an_ha=1&sp1=1&sp2=1&quality=1&sep=1"
-    response = requests.get(url_ip)
-    text = response.content.decode('utf-8')  # 解码
-    soup = BeautifulSoup(text, 'html5lib')  # 以浏览器的方式解析文档生成HTML5格式的文档
-    ip = soup.find('body').string
-    获取IP地址
-    print(ip)
-    option.add_argument('--proxy-server=http://' + ip)
-    :return:
-    '''
-    # 生成一个ua
-
     ua = UserAgent()
     ua = ua.chrome
     option.add_argument('user-agent=' + ua)
     # option.add_argument("--user-data-dir=" + r"C:/Users/hike/AppData/Local/Google/Chrome/User Data")
     driver = webdriver.Chrome(options=option)
-    driver.set_window_size(740, 735)
+    # driver.set_window_size(740, 735)
     return driver,ua
 
 def open_driver(driver):
@@ -191,7 +178,7 @@ def quitChrome(driver):
     driver.delete_all_cookies()
     driver.delete_all_cookies()
     print("关闭浏览器")
-    driver.close()
+    # driver.close()
     # driver.quit()
     print("切换ip")
 def close_ip_web():
@@ -204,9 +191,10 @@ def main():
     dd = []
     for d in data:
         dd.append(d)
+
+    driver, ua_img = proxy()
+    open_driver(driver)
     for u in users:
-        driver,ua_img = proxy()
-        open_driver(driver)
         # login(driver, u)
         # add_coookie_login(u.get('BDUSS'))
         add_cookie(driver,u.get('BDUSS'))

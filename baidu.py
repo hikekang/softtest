@@ -105,18 +105,13 @@ def login(driver, user):
     driver.find_element_by_link_text('登录').click()
     # time.sleep(5)
     print("5s倒计时")
-    # for x in range(5):
-    #     time.sleep(1)
-    #     print(5 - x)
+
     print("用户名登录")
-    # driver.implicitly_wait(15)
     driver.find_element_by_xpath('//*[@id="TANGRAM__PSP_10__footerULoginBtn"]').click()
     name = user.get('name')
     pwd = user.get('pwd')
     print("3s倒计时")
-    # for x in range(3):
-    #     time.sleep(1)  18659566436
-    #     print(3-x)
+
     a = driver.find_element_by_xpath('//*[@id="TANGRAM__PSP_10__userName"]')
     a.clear()
     print("填写用户名")
@@ -130,10 +125,6 @@ def login(driver, user):
     driver.find_element_by_xpath('//*[@id="TANGRAM__PSP_10__submit"]').click()
     # time.sleep(20)
     print("20s倒计时")
-    # for x in range(20):
-    #     time.sleep(1)
-    #     print(20 - x)
-    # 点击下拉列表
 
 def isElementExist(driver, element):
     flag = True
@@ -195,8 +186,6 @@ def main():
     driver, ua_img = proxy()
     open_driver(driver)
     for u in users:
-        # login(driver, u)
-        # add_coookie_login(u.get('BDUSS'))
         add_cookie(driver,u.get('BDUSS'))
         for d in dd:
             jubao(driver, d, u)
